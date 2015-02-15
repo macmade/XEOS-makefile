@@ -92,13 +92,13 @@ $(DIR_BUILD)%/$(PACKAGE)$(EXT_O_PIC): $$(_FILES)
 	$(call PRINT_FILE,$(_ARCH) - PIC,$(COLOR_CYAN)Linking main object file$(COLOR_NONE),$(COLOR_GRAY)$(notdir $@)$(COLOR_NONE))
 
 $(DIR_BUILD)%$(EXT_C)$(EXT_O): _ARCH = $(firstword $(subst /, ,$*))
-$(DIR_BUILD)%$(EXT_C)$(EXT_O): _FILE = $(patsubst $(_ARCH)/%,%$(EXT_C),$*)
+$(DIR_BUILD)%$(EXT_C)$(EXT_O): _FILE = $(subst .,/,$(patsubst $(_ARCH)/%,%,$*))$(EXT_C)
 $(DIR_BUILD)%$(EXT_C)$(EXT_O): $$(_FILE)
 	
-	$(call PRINT_FILE,$(_ARCH),Compiling C file,$(COLOR_YELLOW)$(notdir $(_FILE))$(COLOR_NONE) "->" $(COLOR_GRAY)$(notdir $@)$(COLOR_NONE))
+	$(call PRINT_FILE,$(_ARCH),Compiling C file,$(COLOR_YELLOW)$(_FILE)$(COLOR_NONE) "->" $(COLOR_GRAY)$(notdir $@)$(COLOR_NONE))
 
 $(DIR_BUILD)%$(EXT_C)$(EXT_O_PIC): _ARCH = $(firstword $(subst /, ,$*))
-$(DIR_BUILD)%$(EXT_C)$(EXT_O_PIC): _FILE = $(patsubst $(_ARCH)/%,%$(EXT_C),$*)
+$(DIR_BUILD)%$(EXT_C)$(EXT_O_PIC): _FILE = $(subst .,/,$(patsubst $(_ARCH)/%,%,$*))$(EXT_C)
 $(DIR_BUILD)%$(EXT_C)$(EXT_O_PIC): $$(_FILE)
 	
-	$(call PRINT_FILE,$(_ARCH) - PIC,Compiling C file,$(COLOR_YELLOW)$(notdir $(_FILE))$(COLOR_NONE) "->" $(COLOR_GRAY)$(notdir $@)$(COLOR_NONE))
+	$(call PRINT_FILE,$(_ARCH) - PIC,Compiling C file,$(COLOR_YELLOW)$(_FILE)$(COLOR_NONE) "->" $(COLOR_GRAY)$(notdir $@)$(COLOR_NONE))
