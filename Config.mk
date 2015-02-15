@@ -64,10 +64,11 @@ ARCHS := i386 x86_64
 DIR_SRC   := source/
 DIR_BUILD := build/
 
-EXT_C     := .c
-EXT_H     := .h
-EXT_O     := .o
-EXT_O_PIC := .o-pic
+EXT_C      := .c
+EXT_ASM    := .s
+EXT_H      := .h
+EXT_O      := .o
+EXT_O_PIC  := .o-pic
 
 COLOR_NONE   := "\x1b[0m"
 COLOR_GRAY   := "\x1b[30;01m"
@@ -82,4 +83,7 @@ PRINT             = @echo $(foreach _P,$(PROMPT),"[ "$(COLOR_GREEN)$(_P)$(COLOR_
 PRINT_ARCH        = $(call PRINT,$(2) [ $(COLOR_RED)$(1)$(COLOR_NONE) ])
 PRINT_FILE        = $(call PRINT_ARCH,$(1),$(2)): $(3)
 XEOS_FUNC_C_FILES = $(foreach _F,$(wildcard $(1)*$(EXT_C)),$(_F))
-XEOS_FUNC_C_OBJ   = $(foreach _F,$(FILES),$(patsubst %,$(DIR_BUILD)$(1)/%$(2),$(subst /,.,$(patsubst $(DIR_SRC)%,%,$(_F)))))
+XEOS_FUNC_S_FILES = $(foreach _F,$(wildcard $(1)*$(EXT_S)),$(_F))
+XEOS_FUNC_C_OBJ   = $(foreach _F,$(filter %$(EXT_C),$(FILES)),$(patsubst %,$(DIR_BUILD)$(1)/%$(2),$(subst /,.,$(patsubst $(DIR_SRC)%,%,$(_F)))))
+XEOS_FUNC_S_OBJ   = $(foreach _F,$(filter %$(1)$(EXT_ASM),$(FILES)),$(patsubst %,$(DIR_BUILD)$(1)/%$(2),$(subst /,.,$(patsubst $(DIR_SRC)%,%,$(_F)))))
+XEOS_FUNC_OBJ     = $(call XEOS_FUNC_C_OBJ,$(1),$(2)) $(call XEOS_FUNC_S_OBJ,$(1),$(2))

@@ -62,7 +62,10 @@
 VPATH =
 vpath
 
-vpath %$(EXT_C) $(DIR_SRC)
+vpath %$(EXT_C)      $(DIR_SRC)
+vpath %$(EXT_ASM)    $(DIR_SRC)
+vpath %$(EXT_ASM_32) $(DIR_SRC)
+vpath %$(EXT_ASM_64) $(DIR_SRC)
 
 .SUFFIXES:
 
@@ -80,13 +83,13 @@ clean:
 	$(call PRINT,Cleaning all build files)
 
 $(DIR_BUILD)%/$(PACKAGE)$(EXT_O): _ARCH  = $*
-$(DIR_BUILD)%/$(PACKAGE)$(EXT_O): _FILES = $(call XEOS_FUNC_C_OBJ,$(_ARCH),$(suffix $@))
+$(DIR_BUILD)%/$(PACKAGE)$(EXT_O): _FILES = $(call XEOS_FUNC_OBJ,$(_ARCH),$(suffix $@))
 $(DIR_BUILD)%/$(PACKAGE)$(EXT_O): $$(_FILES)
 	
 	$(call PRINT_FILE,$(_ARCH),$(COLOR_CYAN)Linking main object file$(COLOR_NONE),$(COLOR_GRAY)$(notdir $@)$(COLOR_NONE))
 
 $(DIR_BUILD)%/$(PACKAGE)$(EXT_O_PIC): _ARCH = $*
-$(DIR_BUILD)%/$(PACKAGE)$(EXT_O_PIC): _FILES = $(call XEOS_FUNC_C_OBJ,$(_ARCH),$(suffix $@))
+$(DIR_BUILD)%/$(PACKAGE)$(EXT_O_PIC): _FILES = $(call XEOS_FUNC_OBJ,$(_ARCH),$(suffix $@))
 $(DIR_BUILD)%/$(PACKAGE)$(EXT_O_PIC): $$(_FILES)
 	
 	$(call PRINT_FILE,$(_ARCH) - PIC,$(COLOR_CYAN)Linking main object file$(COLOR_NONE),$(COLOR_GRAY)$(notdir $@)$(COLOR_NONE))
@@ -102,3 +105,15 @@ $(DIR_BUILD)%$(EXT_C)$(EXT_O_PIC): _FILE = $(subst .,/,$(patsubst $(_ARCH)/%,%,$
 $(DIR_BUILD)%$(EXT_C)$(EXT_O_PIC): $$(_FILE)
 	
 	$(call PRINT_FILE,$(_ARCH) - PIC,Compiling C file,$(COLOR_YELLOW)$(_FILE)$(COLOR_NONE) "->" $(COLOR_GRAY)$(notdir $@)$(COLOR_NONE))
+
+$(DIR_BUILD)%$(EXT_ASM)$(EXT_O): _ARCH = $(firstword $(subst /, ,$*))
+$(DIR_BUILD)%$(EXT_ASM)$(EXT_O): _FILE = $(patsubst %/$(_ARCH),%.$(_ARCH),$(subst .,/,$(patsubst $(_ARCH)/%,%,$*)))$(EXT_ASM)
+$(DIR_BUILD)%$(EXT_ASM)$(EXT_O):
+	
+	$(call PRINT_FILE,$(_ARCH),Compiling ASM file,$(COLOR_YELLOW)$(_FILE)$(COLOR_NONE) "->" $(COLOR_GRAY)$(notdir $@)$(COLOR_NONE))
+		
+$(DIR_BUILD)%$(EXT_ASM)$(EXT_O_PIC): _ARCH = $(firstword $(subst /, ,$*))
+$(DIR_BUILD)%$(EXT_ASM)$(EXT_O_PIC): _FILE = $(patsubst %/$(_ARCH),%.$(_ARCH),$(subst .,/,$(patsubst $(_ARCH)/%,%,$*)))$(EXT_ASM)
+$(DIR_BUILD)%$(EXT_ASM)$(EXT_O_PIC):
+	
+	$(call PRINT_FILE,$(_ARCH) - PIC,Compiling ASM file,$(COLOR_YELLOW)$(_FILE)$(COLOR_NONE) "->" $(COLOR_GRAY)$(notdir $@)$(COLOR_NONE))
