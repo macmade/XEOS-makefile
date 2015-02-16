@@ -149,7 +149,7 @@ $(DIR_BUILD)%$(EXT_C)$(EXT_O): _FLAGS = $(ARGS_CC_$(_ARCH))
 $(DIR_BUILD)%$(EXT_C)$(EXT_O): $$(_FILE)
 	
 	$(call PRINT_FILE,$(_ARCH),Compiling C file,$(COLOR_YELLOW)$(_FILE)$(COLOR_NONE) "->" $(COLOR_GRAY)$(notdir $@)$(COLOR_NONE))
-	$(_CC) $(_FLAGS) $(_INC) -o $@ -c $<
+	@$(_CC) $(_FLAGS) $(_INC) -o $@ -c $<
 
 # Compiles a C file (position independant code)
 $(DIR_BUILD)%$(EXT_C)$(EXT_O_PIC): _ARCH = $(firstword $(subst /, ,$*))
@@ -160,7 +160,7 @@ $(DIR_BUILD)%$(EXT_C)$(EXT_O_PIC): _FLAGS = $(ARGS_CC_PIC_$(_ARCH))
 $(DIR_BUILD)%$(EXT_C)$(EXT_O_PIC): $$(_FILE)
 	
 	$(call PRINT_FILE,$(_ARCH) - PIC,Compiling C file,$(COLOR_YELLOW)$(_FILE)$(COLOR_NONE) "->" $(COLOR_GRAY)$(notdir $@)$(COLOR_NONE))
-	$(_CC) $(_FLAGS) $(_INC) -o $@ -c $<
+	@$(_CC) $(_FLAGS) $(_INC) -o $@ -c $<
 	
 # Compiles an ASM file
 $(DIR_BUILD)%$(EXT_ASM)$(EXT_O): _ARCH  = $(firstword $(subst /, ,$*))
