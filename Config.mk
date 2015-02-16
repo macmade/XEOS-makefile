@@ -82,6 +82,11 @@ AS_x86_64     := $(AS)
 AS_PIC_i386   := $(AS)
 AS_PIC_x86_64 := $(AS)
 
+ARGS_AS_i386       := -f elf
+ARGS_AS_x86_64     := -f elf64
+ARGS_AS_PIC_i386   := $(ARGS_AS_i386)
+ARGS_AS_PIC_x86_64 := $(ARGS_AS_x86_64)
+
 CC            := $(PATH_TOOLCHAIN_LLVM)bin/clang
 CC_i386       := $(CC)
 CC_x86_64     := $(CC)

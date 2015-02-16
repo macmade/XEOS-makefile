@@ -134,18 +134,20 @@ $(DIR_BUILD)%$(EXT_C)$(EXT_O_PIC): $$(_FILE)
 	$(call PRINT_FILE,$(_ARCH) - PIC,Compiling C file,$(COLOR_YELLOW)$(_FILE)$(COLOR_NONE) "->" $(COLOR_GRAY)$(notdir $@)$(COLOR_NONE))
 	@$(_CC) $(_FLAGS) $(_INC) -o $@ -c $<
 
-$(DIR_BUILD)%$(EXT_ASM)$(EXT_O): _ARCH = $(firstword $(subst /, ,$*))
-$(DIR_BUILD)%$(EXT_ASM)$(EXT_O): _FILE = $(patsubst %/$(_ARCH),%.$(_ARCH),$(subst .,/,$(patsubst $(_ARCH)/%,%,$*)))$(EXT_ASM)
-$(DIR_BUILD)%$(EXT_ASM)$(EXT_O): _AS   = $(AS_$(_ARCH))
+$(DIR_BUILD)%$(EXT_ASM)$(EXT_O): _ARCH  = $(firstword $(subst /, ,$*))
+$(DIR_BUILD)%$(EXT_ASM)$(EXT_O): _FILE  = $(patsubst %/$(_ARCH),%.$(_ARCH),$(subst .,/,$(patsubst $(_ARCH)/%,%,$*)))$(EXT_ASM)
+$(DIR_BUILD)%$(EXT_ASM)$(EXT_O): _AS    = $(AS_$(_ARCH))
+$(DIR_BUILD)%$(EXT_ASM)$(EXT_O): _FLAGS = $(ARGS_AS_$(_ARCH))
 $(DIR_BUILD)%$(EXT_ASM)$(EXT_O): $$(_FILE)
 	
 	$(call PRINT_FILE,$(_ARCH),Compiling ASM file,$(COLOR_YELLOW)$(_FILE)$(COLOR_NONE) "->" $(COLOR_GRAY)$(notdir $@)$(COLOR_NONE))
-	@$(_AS) -o $@ $<
+	@$(_AS) $(_FLAGS) -o $@ $<
 		
-$(DIR_BUILD)%$(EXT_ASM)$(EXT_O_PIC): _ARCH = $(firstword $(subst /, ,$*))
-$(DIR_BUILD)%$(EXT_ASM)$(EXT_O_PIC): _FILE = $(patsubst %/$(_ARCH),%.$(_ARCH),$(subst .,/,$(patsubst $(_ARCH)/%,%,$*)))$(EXT_ASM)
-$(DIR_BUILD)%$(EXT_ASM)$(EXT_O_PIC): _AS   = $(AS_PIC_$(_ARCH))
+$(DIR_BUILD)%$(EXT_ASM)$(EXT_O_PIC): _ARCH  = $(firstword $(subst /, ,$*))
+$(DIR_BUILD)%$(EXT_ASM)$(EXT_O_PIC): _FILE  = $(patsubst %/$(_ARCH),%.$(_ARCH),$(subst .,/,$(patsubst $(_ARCH)/%,%,$*)))$(EXT_ASM)
+$(DIR_BUILD)%$(EXT_ASM)$(EXT_O_PIC): _AS    = $(AS_PIC_$(_ARCH))
+$(DIR_BUILD)%$(EXT_ASM)$(EXT_O_PIC): _FLAGS = $(ARGS_AS_PIC_$(_ARCH))
 $(DIR_BUILD)%$(EXT_ASM)$(EXT_O_PIC): $$(_FILE)
 	
 	$(call PRINT_FILE,$(_ARCH) - PIC,Compiling ASM file,$(COLOR_YELLOW)$(_FILE)$(COLOR_NONE) "->" $(COLOR_GRAY)$(notdir $@)$(COLOR_NONE))
-	@$(_AS) -o $@ $<
+	@$(_AS) $(_FLAGS) -o $@ $<
