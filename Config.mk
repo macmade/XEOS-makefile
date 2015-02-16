@@ -63,6 +63,9 @@
 # General
 #-------------------------------------------------------------------------------
 
+# Default make target
+.DEFAULT_GOAL := all
+
 # Architecture to build
 ARCHS := i386 x86_64
 
@@ -97,6 +100,9 @@ GIT_URL := https://github.com/macmade/%.git
 #-------------------------------------------------------------------------------
 # Software
 #-------------------------------------------------------------------------------
+
+# Make
+MAKE := $(MAKE) -s
 
 # Assembler
 AS            := $(PATH_TOOLCHAIN_YASM)bin/yasm

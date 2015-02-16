@@ -67,9 +67,6 @@ vpath
 vpath %$(EXT_C)   $(DIR_SRC)
 vpath %$(EXT_ASM) $(DIR_SRC)
 
-# Default make target
-.DEFAULT_GOAL: all
-
 # Clears any existing suffix
 .SUFFIXES:
 
