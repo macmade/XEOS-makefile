@@ -119,16 +119,22 @@ $(DIR_DEPS)%:
 # Links the main object file
 $(DIR_BUILD)%$(EXT_O): _ARCH  = $*
 $(DIR_BUILD)%$(EXT_O): _FILES = $(call XEOS_FUNC_OBJ,$(_ARCH),$(suffix $@))
+$(DIR_BUILD)%$(EXT_O): _LD    = $(LD_$(_ARCH))
+$(DIR_BUILD)%$(EXT_O): _FLAGS = $(ARGS_LD_$(_ARCH))
 $(DIR_BUILD)%$(EXT_O): $$(shell mkdir -p $$(DIR_BUILD)$$(_ARCH)) $$(_FILES)
 	
 	$(call PRINT_FILE,$(_ARCH),$(COLOR_CYAN)Linking main object file$(COLOR_NONE),$(COLOR_GRAY)$(notdir $@)$(COLOR_NONE))
+	@$(_LD) -r $(_FLAGS) $(_FILES) -o $@
 
 # Links the main object file (position independant code)
 $(DIR_BUILD)%$(EXT_O_PIC): _ARCH = $*
 $(DIR_BUILD)%$(EXT_O_PIC): _FILES = $(call XEOS_FUNC_OBJ,$(_ARCH),$(suffix $@))
+$(DIR_BUILD)%$(EXT_O_PIC): _LD    = $(LD_PIC_$(_ARCH))
+$(DIR_BUILD)%$(EXT_O_PIC): _FLAGS = $(ARGS_LD_PIC_$(_ARCH))
 $(DIR_BUILD)%$(EXT_O_PIC): $$(shell mkdir -p $$(DIR_BUILD)$$(_ARCH)) $$(_FILES)
 	
 	$(call PRINT_FILE,$(_ARCH) - PIC,$(COLOR_CYAN)Linking main object file$(COLOR_NONE),$(COLOR_GRAY)$(notdir $@)$(COLOR_NONE))
+	@$(_LD) -r $(_FLAGS) $(_FILES) -o $@
 
 # Compiles a C file
 $(DIR_BUILD)%$(EXT_C)$(EXT_O): _ARCH  = $(firstword $(subst /, ,$*))

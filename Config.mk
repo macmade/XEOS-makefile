@@ -84,9 +84,10 @@ DIR_BUILD := build/
 DIR_DEPS  := deps/
 
 # Toolchain paths
-PATH_TOOLCHAIN      := /usr/local/xeos-build/
-PATH_TOOLCHAIN_YASM := $(PATH_TOOLCHAIN)yasm/
-PATH_TOOLCHAIN_LLVM := $(PATH_TOOLCHAIN)llvm/
+PATH_TOOLCHAIN          := /usr/local/xeos-build/
+PATH_TOOLCHAIN_YASM     := $(PATH_TOOLCHAIN)yasm/
+PATH_TOOLCHAIN_LLVM     := $(PATH_TOOLCHAIN)llvm/
+PATH_TOOLCHAIN_BINUTILS := $(PATH_TOOLCHAIN)binutils/
 
 # GIT URL for dependancies
 GIT_URL := https://github.com/macmade/%.git
@@ -125,10 +126,22 @@ ARGS_CC_PROFILE       := -finstrument-functions
 ARGS_CC_PIC           := -fPIC
 ARGS_CC_TARGET_i386   := -march=i386 -target i386-elf-freebsd
 ARGS_CC_TARGET_x86_64 := -march=x86-64 -target x86_64-elf-freebsd
-ARGS_CC_i386          := $(ARGS_CC_TARGET_32) $(ARGS_CC_MISC) $(ARGS_CC_INC) $(ARGS_CC_STD) $(ARGS_CC_WARN) $(ARGS_CC_CONST) $(ARGS_CC_PROFILE)
-ARGS_CC_x86_64        := $(ARGS_CC_TARGET_64) $(ARGS_CC_MISC) $(ARGS_CC_INC) $(ARGS_CC_STD) $(ARGS_CC_WARN) $(ARGS_CC_CONST) $(ARGS_CC_PROFILE)
+ARGS_CC_i386          := $(ARGS_CC_TARGET_i386) $(ARGS_CC_MISC) $(ARGS_CC_INC) $(ARGS_CC_STD) $(ARGS_CC_WARN) $(ARGS_CC_CONST) $(ARGS_CC_PROFILE)
+ARGS_CC_x86_64        := $(ARGS_CC_TARGET_x86_64) $(ARGS_CC_MISC) $(ARGS_CC_INC) $(ARGS_CC_STD) $(ARGS_CC_WARN) $(ARGS_CC_CONST) $(ARGS_CC_PROFILE)
 ARGS_CC_PIC_i386      := $(ARGS_CC_i386) $(ARGS_CC_PIC)
 ARGS_CC_PIC_x86_64    := $(ARGS_CC_x86_64) $(ARGS_CC_PIC)
+
+# Linker
+LD_i386       := $(PATH_TOOLCHAIN_BINUTILS)bin/i386-elf-freebsd-ld
+LD_x86_64     := $(PATH_TOOLCHAIN_BINUTILS)bin/x86_64-elf-freebsd-ld
+LD_PIC_i386   := $(LD_i386)
+LD_PIC_x86_64 := $(LD_x86_64)
+
+# Arguments for the linker
+ARGS_LD_i386       := 
+ARGS_LD_x86_64     := 
+ARGS_LD_PIC_i386   := 
+ARGS_LD_PIC_x86_64 := 
 
 #-------------------------------------------------------------------------------
 # Display
@@ -184,7 +197,7 @@ XEOS_FUNC_C_FILES = $(foreach _F,$(wildcard $(1)*$(EXT_C)),$(_F))
 # 
 # @param    The directory
 # 
-XEOS_FUNC_S_FILES = $(foreach _F,$(wildcard $(1)*$(EXT_S)),$(_F))
+XEOS_FUNC_S_FILES = $(foreach _F,$(wildcard $(1)*$(EXT_ASM)),$(_F))
 
 # 
 # Gets all object files to build from C sources
