@@ -67,11 +67,13 @@
 ARCHS := i386 x86_64
 
 # File extensions
-EXT_C      := .c
-EXT_ASM    := .s
-EXT_H      := .h
-EXT_O      := .o
-EXT_O_PIC  := .o-pic
+EXT_C       := .c
+EXT_ASM     := .s
+EXT_H       := .h
+EXT_O       := .o
+EXT_O_PIC   := .o-pic
+EXT_OBJ     := .obj
+EXT_OBJ_PIC := .obj-pic
 
 #-------------------------------------------------------------------------------
 # Paths & directories
@@ -147,6 +149,8 @@ ARGS_LD_PIC_x86_64 :=
 # Display
 #-------------------------------------------------------------------------------
 
+ifndef XCODE_VERSION_MAJOR
+
 # Colors for the terminal output
 COLOR_NONE   := "\x1b[0m"
 COLOR_GRAY   := "\x1b[30;01m"
@@ -156,6 +160,8 @@ COLOR_YELLOW := "\x1b[33;01m"
 COLOR_BLUE   := "\x1b[34;01m"
 COLOR_PURPLE := "\x1b[35;01m"
 COLOR_CYAN   := "\x1b[36;01m"
+
+endif
 
 #-------------------------------------------------------------------------------
 # Functions

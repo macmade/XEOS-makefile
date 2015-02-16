@@ -64,8 +64,8 @@ VPATH =
 vpath
 
 # Add search paths for source files
-vpath %$(EXT_C)      $(DIR_SRC)
-vpath %$(EXT_ASM)    $(DIR_SRC)
+vpath %$(EXT_C)   $(DIR_SRC)
+vpath %$(EXT_ASM) $(DIR_SRC)
 
 # Default make target
 .DEFAULT_GOAL: all
@@ -92,7 +92,7 @@ vpath %$(EXT_ASM)    $(DIR_SRC)
 .SECONDEXPANSION:
 
 # Build object files
-obj-build: _OBJ  = $(foreach _A,$(ARCHS),$(patsubst %,$(DIR_BUILD)%$(EXT_O),$(_A)) $(patsubst %,$(DIR_BUILD)%$(EXT_O_PIC),$(_A)))
+obj-build: _OBJ  = $(foreach _A,$(ARCHS),$(patsubst %,$(DIR_BUILD)%$(EXT_OBJ),$(_A)) $(patsubst %,$(DIR_BUILD)%$(EXT_OBJ_PIC),$(_A)))
 obj-build: _DEPS = $(foreach _D,$(DEPS),$(patsubst %,update-$(DIR_DEPS)%,$(_D)))
 obj-build: $$(_DEPS) $$(_OBJ)
 	
@@ -116,23 +116,27 @@ $(DIR_DEPS)%:
 	$(call PRINT,Cloning dependancy: $(COLOR_YELLOW)$*$(COLOR_NONE))
 	@git clone $(patsubst %,$(GIT_URL),$*) $@
 
+# Avoids stupid search rules...
+%$(EXT_C):
+%$(EXT_ASM):
+
 # Links the main object file
-$(DIR_BUILD)%$(EXT_O): _ARCH  = $*
-$(DIR_BUILD)%$(EXT_O): _FILES = $(call XEOS_FUNC_OBJ,$(_ARCH),$(suffix $@))
-$(DIR_BUILD)%$(EXT_O): _LD    = $(LD_$(_ARCH))
-$(DIR_BUILD)%$(EXT_O): _FLAGS = $(ARGS_LD_$(_ARCH))
-$(DIR_BUILD)%$(EXT_O): $$(shell mkdir -p $$(DIR_BUILD)$$(_ARCH)) $$(_FILES)
+$(DIR_BUILD)%$(EXT_OBJ): _ARCH  = $*
+$(DIR_BUILD)%$(EXT_OBJ): _FILES = $(call XEOS_FUNC_OBJ,$(_ARCH),$(EXT_O))
+$(DIR_BUILD)%$(EXT_OBJ): _LD    = $(LD_$(_ARCH))
+$(DIR_BUILD)%$(EXT_OBJ): _FLAGS = $(ARGS_LD_$(_ARCH))
+$(DIR_BUILD)%$(EXT_OBJ): $$(shell mkdir -p $$(DIR_BUILD)$$(_ARCH)) $$(_FILES)
 	
 	$(call PRINT_FILE,$(_ARCH),$(COLOR_CYAN)Linking main object file$(COLOR_NONE),$(COLOR_GRAY)$(notdir $@)$(COLOR_NONE))
 	@$(_LD) -r $(_FLAGS) $(_FILES) -o $@
 
 # Links the main object file (position independant code)
-$(DIR_BUILD)%$(EXT_O_PIC): _ARCH = $*
-$(DIR_BUILD)%$(EXT_O_PIC): _FILES = $(call XEOS_FUNC_OBJ,$(_ARCH),$(suffix $@))
-$(DIR_BUILD)%$(EXT_O_PIC): _LD    = $(LD_PIC_$(_ARCH))
-$(DIR_BUILD)%$(EXT_O_PIC): _FLAGS = $(ARGS_LD_PIC_$(_ARCH))
-$(DIR_BUILD)%$(EXT_O_PIC): $$(shell mkdir -p $$(DIR_BUILD)$$(_ARCH)) $$(_FILES)
-	
+$(DIR_BUILD)%$(EXT_OBJ_PIC): _ARCH = $*
+$(DIR_BUILD)%$(EXT_OBJ_PIC): _FILES = $(call XEOS_FUNC_OBJ,$(_ARCH),$(EXT_O_PIC))
+$(DIR_BUILD)%$(EXT_OBJ_PIC): _LD    = $(LD_PIC_$(_ARCH))
+$(DIR_BUILD)%$(EXT_OBJ_PIC): _FLAGS = $(ARGS_LD_PIC_$(_ARCH))
+$(DIR_BUILD)%$(EXT_OBJ_PIC): $$(shell mkdir -p $$(DIR_BUILD)$$(_ARCH)) $$(_FILES)
+
 	$(call PRINT_FILE,$(_ARCH) - PIC,$(COLOR_CYAN)Linking main object file$(COLOR_NONE),$(COLOR_GRAY)$(notdir $@)$(COLOR_NONE))
 	@$(_LD) -r $(_FLAGS) $(_FILES) -o $@
 
