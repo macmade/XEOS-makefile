@@ -62,13 +62,31 @@
 ARCHS := i386 x86_64
 
 DIR_SRC   := source/
+DIR_INC   := include/
 DIR_BUILD := build/
+DIR_DEPS  := deps/
 
 EXT_C      := .c
 EXT_ASM    := .s
 EXT_H      := .h
 EXT_O      := .o
 EXT_O_PIC  := .o-pic
+
+PATH_TOOLCHAIN      := /usr/local/xeos-build/
+PATH_TOOLCHAIN_YASM := $(PATH_TOOLCHAIN)yasm/
+PATH_TOOLCHAIN_LLVM := $(PATH_TOOLCHAIN)llvm/
+
+AS            := $(PATH_TOOLCHAIN_YASM)bin/yasm
+AS_i386       := $(AS)
+AS_x86_64     := $(AS)
+AS_PIC_i386   := $(AS)
+AS_PIC_x86_64 := $(AS)
+
+CC            := $(PATH_TOOLCHAIN_LLVM)bin/clang
+CC_i386       := $(CC)
+CC_x86_64     := $(CC)
+CC_PIC_i386   := $(CC)
+CC_PIC_x86_64 := $(CC)
 
 COLOR_NONE   := "\x1b[0m"
 COLOR_GRAY   := "\x1b[30;01m"
@@ -79,7 +97,7 @@ COLOR_BLUE   := "\x1b[34;01m"
 COLOR_PURPLE := "\x1b[35;01m"
 COLOR_CYAN   := "\x1b[36;01m"
 
-PRINT             = @echo $(foreach _P,$(PROMPT),"[ "$(COLOR_GREEN)$(_P)$(COLOR_NONE)" ]> ")"*** "$(1)
+PRINT             = @echo $(foreach _P,$(PROMPT),"[ "$(COLOR_GREEN)$(_P)$(COLOR_NONE)" ]>")" *** "$(1)
 PRINT_ARCH        = $(call PRINT,$(2) [ $(COLOR_RED)$(1)$(COLOR_NONE) ])
 PRINT_FILE        = $(call PRINT_ARCH,$(1),$(2)): $(3)
 XEOS_FUNC_C_FILES = $(foreach _F,$(wildcard $(1)*$(EXT_C)),$(_F))
