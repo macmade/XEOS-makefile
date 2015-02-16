@@ -128,10 +128,12 @@ ARGS_CC_PROFILE       := -finstrument-functions
 ARGS_CC_PIC           := -fPIC
 ARGS_CC_TARGET_i386   := -march=i386 -target i386-elf-freebsd
 ARGS_CC_TARGET_x86_64 := -march=x86-64 -target x86_64-elf-freebsd
-ARGS_CC_i386          := $(ARGS_CC_TARGET_i386) $(ARGS_CC_MISC) $(ARGS_CC_INC) $(ARGS_CC_STD) $(ARGS_CC_WARN) $(ARGS_CC_CONST) $(ARGS_CC_PROFILE)
-ARGS_CC_x86_64        := $(ARGS_CC_TARGET_x86_64) $(ARGS_CC_MISC) $(ARGS_CC_INC) $(ARGS_CC_STD) $(ARGS_CC_WARN) $(ARGS_CC_CONST) $(ARGS_CC_PROFILE)
-ARGS_CC_PIC_i386      := $(ARGS_CC_i386) $(ARGS_CC_PIC)
-ARGS_CC_PIC_x86_64    := $(ARGS_CC_x86_64) $(ARGS_CC_PIC)
+
+# Architecture specific arguments for the C compiler
+ARGS_CC_i386       = $(ARGS_CC_TARGET_i386) $(ARGS_CC_MISC) $(ARGS_CC_INC) $(ARGS_CC_STD) $(ARGS_CC_WARN) $(ARGS_CC_CONST) $(ARGS_CC_PROFILE)
+ARGS_CC_x86_64     = $(ARGS_CC_TARGET_x86_64) $(ARGS_CC_MISC) $(ARGS_CC_INC) $(ARGS_CC_STD) $(ARGS_CC_WARN) $(ARGS_CC_CONST) $(ARGS_CC_PROFILE)
+ARGS_CC_PIC_i386   = $(ARGS_CC_i386) $(ARGS_CC_PIC)
+ARGS_CC_PIC_x86_64 = $(ARGS_CC_x86_64) $(ARGS_CC_PIC)
 
 # Linker
 LD_i386       := $(PATH_TOOLCHAIN_BINUTILS)bin/i386-elf-freebsd-ld
