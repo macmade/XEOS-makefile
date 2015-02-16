@@ -76,7 +76,8 @@ vpath %$(EXT_ASM_64) $(DIR_SRC)
            $(DIR_BUILD)%$(EXT_C)$(EXT_O)       \
            $(DIR_BUILD)%$(EXT_C)$(EXT_O_PIC)   \
            $(DIR_BUILD)%$(EXT_ASM)$(EXT_O)     \
-           $(DIR_BUILD)%$(EXT_ASM)$(EXT_O_PIC)
+           $(DIR_BUILD)%$(EXT_ASM)$(EXT_O_PIC) \
+           $(DIR_DEPS)%
 
 .SECONDEXPANSION:
 
@@ -113,23 +114,25 @@ $(DIR_BUILD)%$(EXT_O_PIC): $$(shell mkdir -p $$(DIR_BUILD)$$(_ARCH)) $$(_FILES)
 	
 	$(call PRINT_FILE,$(_ARCH) - PIC,$(COLOR_CYAN)Linking main object file$(COLOR_NONE),$(COLOR_GRAY)$(notdir $@)$(COLOR_NONE))
 
-$(DIR_BUILD)%$(EXT_C)$(EXT_O): _ARCH = $(firstword $(subst /, ,$*))
-$(DIR_BUILD)%$(EXT_C)$(EXT_O): _FILE = $(subst .,/,$(patsubst $(_ARCH)/%,%,$*))$(EXT_C)
-$(DIR_BUILD)%$(EXT_C)$(EXT_O): _CC   = $(CC_$(_ARCH))
-$(DIR_BUILD)%$(EXT_C)$(EXT_O): _INC  = $(foreach _D,$(DEPS),$(patsubst %,-I $(DIR_DEPS)%/$(DIR_INC),$(_D)))
+$(DIR_BUILD)%$(EXT_C)$(EXT_O): _ARCH  = $(firstword $(subst /, ,$*))
+$(DIR_BUILD)%$(EXT_C)$(EXT_O): _FILE  = $(subst .,/,$(patsubst $(_ARCH)/%,%,$*))$(EXT_C)
+$(DIR_BUILD)%$(EXT_C)$(EXT_O): _CC    = $(CC_$(_ARCH))
+$(DIR_BUILD)%$(EXT_C)$(EXT_O): _INC   = $(foreach _D,$(DEPS),$(patsubst %,-I $(DIR_DEPS)%/$(DIR_INC),$(_D)))
+$(DIR_BUILD)%$(EXT_C)$(EXT_O): _FLAGS = $(ARGS_CC_$(_ARCH))
 $(DIR_BUILD)%$(EXT_C)$(EXT_O): $$(_FILE)
 	
 	$(call PRINT_FILE,$(_ARCH),Compiling C file,$(COLOR_YELLOW)$(_FILE)$(COLOR_NONE) "->" $(COLOR_GRAY)$(notdir $@)$(COLOR_NONE))
-	@$(_CC) -I $(DIR_INC) $(_INC) -o $@ -c $<
+	@$(_CC) $(_FLAGS) $(_INC) -o $@ -c $<
 
 $(DIR_BUILD)%$(EXT_C)$(EXT_O_PIC): _ARCH = $(firstword $(subst /, ,$*))
 $(DIR_BUILD)%$(EXT_C)$(EXT_O_PIC): _FILE = $(subst .,/,$(patsubst $(_ARCH)/%,%,$*))$(EXT_C)
 $(DIR_BUILD)%$(EXT_C)$(EXT_O_PIC): _CC   = $(CC_PIC_$(_ARCH))
 $(DIR_BUILD)%$(EXT_C)$(EXT_O_PIC): _INC  = $(foreach _D,$(DEPS),$(patsubst %,-I $(DIR_DEPS)%/$(DIR_INC),$(_D)))
+$(DIR_BUILD)%$(EXT_C)$(EXT_O_PIC): _FLAGS = $(ARGS_CC_PIC_$(_ARCH))
 $(DIR_BUILD)%$(EXT_C)$(EXT_O_PIC): $$(_FILE)
 	
 	$(call PRINT_FILE,$(_ARCH) - PIC,Compiling C file,$(COLOR_YELLOW)$(_FILE)$(COLOR_NONE) "->" $(COLOR_GRAY)$(notdir $@)$(COLOR_NONE))
-	@$(_CC) -I $(DIR_INC) $(_INC) -o $@ -c $<
+	@$(_CC) $(_FLAGS) $(_INC) -o $@ -c $<
 
 $(DIR_BUILD)%$(EXT_ASM)$(EXT_O): _ARCH = $(firstword $(subst /, ,$*))
 $(DIR_BUILD)%$(EXT_ASM)$(EXT_O): _FILE = $(patsubst %/$(_ARCH),%.$(_ARCH),$(subst .,/,$(patsubst $(_ARCH)/%,%,$*)))$(EXT_ASM)

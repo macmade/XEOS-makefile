@@ -88,6 +88,21 @@ CC_x86_64     := $(CC)
 CC_PIC_i386   := $(CC)
 CC_PIC_x86_64 := $(CC)
 
+ARGS_CC_WARN          := -Weverything -Werror
+ARGS_CC_STD           := -std=c99
+ARGS_CC_CONST         := -D __XEOS__ -D _POSIX_C_SOURCE=200809L -U __FreeBSD__ -U __FreeBSD_kernel__
+ARGS_CC_INC           := -I $(DIR_INC)
+ARGS_CC_MISC          := -Os -fno-strict-aliasing -nostdlib -nostdinc -fno-builtin -fblocks
+ARGS_CC_PROFILE       := -finstrument-functions
+ARGS_CC_PIC           := -fPIC
+ARGS_CC_TARGET_i386   := -march=i386 -target i386-elf-freebsd
+ARGS_CC_TARGET_x86_64 := -march=x86-64 -target x86_64-elf-freebsd
+
+ARGS_CC_i386       := $(ARGS_CC_TARGET_32) $(ARGS_CC_MISC) $(ARGS_CC_INC) $(ARGS_CC_STD) $(ARGS_CC_WARN) $(ARGS_CC_CONST) $(ARGS_CC_PROFILE)
+ARGS_CC_x86_64     := $(ARGS_CC_TARGET_64) $(ARGS_CC_MISC) $(ARGS_CC_INC) $(ARGS_CC_STD) $(ARGS_CC_WARN) $(ARGS_CC_CONST) $(ARGS_CC_PROFILE)
+ARGS_CC_PIC_i386   := $(ARGS_CC_i386) $(ARGS_CC_PIC)
+ARGS_CC_PIC_x86_64 := $(ARGS_CC_x86_64) $(ARGS_CC_PIC)
+
 COLOR_NONE   := "\x1b[0m"
 COLOR_GRAY   := "\x1b[30;01m"
 COLOR_RED    := "\x1b[31;01m"
