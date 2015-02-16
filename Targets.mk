@@ -59,18 +59,24 @@
 
 # $Id$
 
+# Clear any existing search path
 VPATH =
 vpath
 
+# Add search paths for source files
 vpath %$(EXT_C)      $(DIR_SRC)
 vpath %$(EXT_ASM)    $(DIR_SRC)
-vpath %$(EXT_ASM_32) $(DIR_SRC)
-vpath %$(EXT_ASM_64) $(DIR_SRC)
 
+# Default make target
+.DEFAULT_GOAL: all
+
+# Clears any existing suffix
 .SUFFIXES:
 
-.PHONY: all clean
+# Phony targets
+.PHONY: all clean obj-build obj-clean
 
+# Precious targets
 .PRECIOUS: $(DIR_BUILD)%$(EXT_O)               \
            $(DIR_BUILD)%$(EXT_O_PIC)           \
            $(DIR_BUILD)%$(EXT_C)$(EXT_O)       \
@@ -79,41 +85,52 @@ vpath %$(EXT_ASM_64) $(DIR_SRC)
            $(DIR_BUILD)%$(EXT_ASM)$(EXT_O_PIC) \
            $(DIR_DEPS)%
 
+#-------------------------------------------------------------------------------
+# Targets with second expansion
+#-------------------------------------------------------------------------------
+
 .SECONDEXPANSION:
 
-all: _OBJ  = $(foreach _A,$(ARCHS),$(patsubst %,$(DIR_BUILD)%$(EXT_O),$(_A)) $(patsubst %,$(DIR_BUILD)%$(EXT_O_PIC),$(_A)))
-all: _DEPS = $(foreach _D,$(DEPS),$(patsubst %,update-$(DIR_DEPS)%,$(_D)))
-all: $$(_DEPS) $$(_OBJ)
+# Build object files
+obj-build: _OBJ  = $(foreach _A,$(ARCHS),$(patsubst %,$(DIR_BUILD)%$(EXT_O),$(_A)) $(patsubst %,$(DIR_BUILD)%$(EXT_O_PIC),$(_A)))
+obj-build: _DEPS = $(foreach _D,$(DEPS),$(patsubst %,update-$(DIR_DEPS)%,$(_D)))
+obj-build: $$(_DEPS) $$(_OBJ)
 	
 	@:
 	
-clean:
+# Clean object files
+obj-clean:
 	
 	$(call PRINT,Cleaning all build files)
 	@rm -rf $(DIR_BUILD)*
 
+# Update dependancy
 update-$(DIR_DEPS)%: $$(DIR_DEPS)$$*
 	
 	$(call PRINT,Updating dependancy: $(COLOR_YELLOW)$*$(COLOR_NONE))
 	@cd $< && git pull
 	
+# Clone dependancy
 $(DIR_DEPS)%:
 	
 	$(call PRINT,Cloning dependancy: $(COLOR_YELLOW)$*$(COLOR_NONE))
-	@git clone https://github.com/macmade/$*.git $@
+	@git clone $(patsubst %,$(GIT_URL),$*) $@
 
+# Links the main object file
 $(DIR_BUILD)%$(EXT_O): _ARCH  = $*
 $(DIR_BUILD)%$(EXT_O): _FILES = $(call XEOS_FUNC_OBJ,$(_ARCH),$(suffix $@))
 $(DIR_BUILD)%$(EXT_O): $$(shell mkdir -p $$(DIR_BUILD)$$(_ARCH)) $$(_FILES)
 	
 	$(call PRINT_FILE,$(_ARCH),$(COLOR_CYAN)Linking main object file$(COLOR_NONE),$(COLOR_GRAY)$(notdir $@)$(COLOR_NONE))
 
+# Links the main object file (position independant code)
 $(DIR_BUILD)%$(EXT_O_PIC): _ARCH = $*
 $(DIR_BUILD)%$(EXT_O_PIC): _FILES = $(call XEOS_FUNC_OBJ,$(_ARCH),$(suffix $@))
 $(DIR_BUILD)%$(EXT_O_PIC): $$(shell mkdir -p $$(DIR_BUILD)$$(_ARCH)) $$(_FILES)
 	
 	$(call PRINT_FILE,$(_ARCH) - PIC,$(COLOR_CYAN)Linking main object file$(COLOR_NONE),$(COLOR_GRAY)$(notdir $@)$(COLOR_NONE))
 
+# Compiles a C file
 $(DIR_BUILD)%$(EXT_C)$(EXT_O): _ARCH  = $(firstword $(subst /, ,$*))
 $(DIR_BUILD)%$(EXT_C)$(EXT_O): _FILE  = $(subst .,/,$(patsubst $(_ARCH)/%,%,$*))$(EXT_C)
 $(DIR_BUILD)%$(EXT_C)$(EXT_O): _CC    = $(CC_$(_ARCH))
@@ -124,6 +141,7 @@ $(DIR_BUILD)%$(EXT_C)$(EXT_O): $$(_FILE)
 	$(call PRINT_FILE,$(_ARCH),Compiling C file,$(COLOR_YELLOW)$(_FILE)$(COLOR_NONE) "->" $(COLOR_GRAY)$(notdir $@)$(COLOR_NONE))
 	@$(_CC) $(_FLAGS) $(_INC) -o $@ -c $<
 
+# Compiles a C file (position independant code)
 $(DIR_BUILD)%$(EXT_C)$(EXT_O_PIC): _ARCH = $(firstword $(subst /, ,$*))
 $(DIR_BUILD)%$(EXT_C)$(EXT_O_PIC): _FILE = $(subst .,/,$(patsubst $(_ARCH)/%,%,$*))$(EXT_C)
 $(DIR_BUILD)%$(EXT_C)$(EXT_O_PIC): _CC   = $(CC_PIC_$(_ARCH))
@@ -133,7 +151,8 @@ $(DIR_BUILD)%$(EXT_C)$(EXT_O_PIC): $$(_FILE)
 	
 	$(call PRINT_FILE,$(_ARCH) - PIC,Compiling C file,$(COLOR_YELLOW)$(_FILE)$(COLOR_NONE) "->" $(COLOR_GRAY)$(notdir $@)$(COLOR_NONE))
 	@$(_CC) $(_FLAGS) $(_INC) -o $@ -c $<
-
+	
+# Compiles an ASM file
 $(DIR_BUILD)%$(EXT_ASM)$(EXT_O): _ARCH  = $(firstword $(subst /, ,$*))
 $(DIR_BUILD)%$(EXT_ASM)$(EXT_O): _FILE  = $(patsubst %/$(_ARCH),%.$(_ARCH),$(subst .,/,$(patsubst $(_ARCH)/%,%,$*)))$(EXT_ASM)
 $(DIR_BUILD)%$(EXT_ASM)$(EXT_O): _AS    = $(AS_$(_ARCH))
@@ -142,7 +161,8 @@ $(DIR_BUILD)%$(EXT_ASM)$(EXT_O): $$(_FILE)
 	
 	$(call PRINT_FILE,$(_ARCH),Compiling ASM file,$(COLOR_YELLOW)$(_FILE)$(COLOR_NONE) "->" $(COLOR_GRAY)$(notdir $@)$(COLOR_NONE))
 	@$(_AS) $(_FLAGS) -o $@ $<
-		
+	
+# Compiles an ASM file (position independant code)
 $(DIR_BUILD)%$(EXT_ASM)$(EXT_O_PIC): _ARCH  = $(firstword $(subst /, ,$*))
 $(DIR_BUILD)%$(EXT_ASM)$(EXT_O_PIC): _FILE  = $(patsubst %/$(_ARCH),%.$(_ARCH),$(subst .,/,$(patsubst $(_ARCH)/%,%,$*)))$(EXT_ASM)
 $(DIR_BUILD)%$(EXT_ASM)$(EXT_O_PIC): _AS    = $(AS_PIC_$(_ARCH))

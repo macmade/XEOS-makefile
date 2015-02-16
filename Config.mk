@@ -59,40 +59,63 @@
 
 # $Id$
 
+#-------------------------------------------------------------------------------
+# General
+#-------------------------------------------------------------------------------
+
+# Architecture to build
 ARCHS := i386 x86_64
 
-DIR_SRC   := source/
-DIR_INC   := include/
-DIR_BUILD := build/
-DIR_DEPS  := deps/
-
+# File extensions
 EXT_C      := .c
 EXT_ASM    := .s
 EXT_H      := .h
 EXT_O      := .o
 EXT_O_PIC  := .o-pic
 
+#-------------------------------------------------------------------------------
+# Paths & directories
+#-------------------------------------------------------------------------------
+
+# Project directories
+DIR_SRC   := source/
+DIR_INC   := include/
+DIR_BUILD := build/
+DIR_DEPS  := deps/
+
+# Toolchain paths
 PATH_TOOLCHAIN      := /usr/local/xeos-build/
 PATH_TOOLCHAIN_YASM := $(PATH_TOOLCHAIN)yasm/
 PATH_TOOLCHAIN_LLVM := $(PATH_TOOLCHAIN)llvm/
 
+# GIT URL for dependancies
+GIT_URL := https://github.com/macmade/%.git
+
+#-------------------------------------------------------------------------------
+# Software
+#-------------------------------------------------------------------------------
+
+# Assembler
 AS            := $(PATH_TOOLCHAIN_YASM)bin/yasm
 AS_i386       := $(AS)
 AS_x86_64     := $(AS)
 AS_PIC_i386   := $(AS)
 AS_PIC_x86_64 := $(AS)
 
+# Arguments for the assembler
 ARGS_AS_i386       := -f elf
 ARGS_AS_x86_64     := -f elf64
 ARGS_AS_PIC_i386   := $(ARGS_AS_i386)
 ARGS_AS_PIC_x86_64 := $(ARGS_AS_x86_64)
 
+# C compiler
 CC            := $(PATH_TOOLCHAIN_LLVM)bin/clang
 CC_i386       := $(CC)
 CC_x86_64     := $(CC)
 CC_PIC_i386   := $(CC)
 CC_PIC_x86_64 := $(CC)
 
+# Arguments for the C compiler
 ARGS_CC_WARN          := -Weverything -Werror
 ARGS_CC_STD           := -std=c99
 ARGS_CC_CONST         := -D __XEOS__ -D _POSIX_C_SOURCE=200809L -U __FreeBSD__ -U __FreeBSD_kernel__
@@ -102,12 +125,16 @@ ARGS_CC_PROFILE       := -finstrument-functions
 ARGS_CC_PIC           := -fPIC
 ARGS_CC_TARGET_i386   := -march=i386 -target i386-elf-freebsd
 ARGS_CC_TARGET_x86_64 := -march=x86-64 -target x86_64-elf-freebsd
+ARGS_CC_i386          := $(ARGS_CC_TARGET_32) $(ARGS_CC_MISC) $(ARGS_CC_INC) $(ARGS_CC_STD) $(ARGS_CC_WARN) $(ARGS_CC_CONST) $(ARGS_CC_PROFILE)
+ARGS_CC_x86_64        := $(ARGS_CC_TARGET_64) $(ARGS_CC_MISC) $(ARGS_CC_INC) $(ARGS_CC_STD) $(ARGS_CC_WARN) $(ARGS_CC_CONST) $(ARGS_CC_PROFILE)
+ARGS_CC_PIC_i386      := $(ARGS_CC_i386) $(ARGS_CC_PIC)
+ARGS_CC_PIC_x86_64    := $(ARGS_CC_x86_64) $(ARGS_CC_PIC)
 
-ARGS_CC_i386       := $(ARGS_CC_TARGET_32) $(ARGS_CC_MISC) $(ARGS_CC_INC) $(ARGS_CC_STD) $(ARGS_CC_WARN) $(ARGS_CC_CONST) $(ARGS_CC_PROFILE)
-ARGS_CC_x86_64     := $(ARGS_CC_TARGET_64) $(ARGS_CC_MISC) $(ARGS_CC_INC) $(ARGS_CC_STD) $(ARGS_CC_WARN) $(ARGS_CC_CONST) $(ARGS_CC_PROFILE)
-ARGS_CC_PIC_i386   := $(ARGS_CC_i386) $(ARGS_CC_PIC)
-ARGS_CC_PIC_x86_64 := $(ARGS_CC_x86_64) $(ARGS_CC_PIC)
+#-------------------------------------------------------------------------------
+# Display
+#-------------------------------------------------------------------------------
 
+# Colors for the terminal output
 COLOR_NONE   := "\x1b[0m"
 COLOR_GRAY   := "\x1b[30;01m"
 COLOR_RED    := "\x1b[31;01m"
@@ -117,11 +144,68 @@ COLOR_BLUE   := "\x1b[34;01m"
 COLOR_PURPLE := "\x1b[35;01m"
 COLOR_CYAN   := "\x1b[36;01m"
 
-PRINT             = @echo $(foreach _P,$(PROMPT),"[ "$(COLOR_GREEN)$(_P)$(COLOR_NONE)" ]>")" *** "$(1)
-PRINT_ARCH        = $(call PRINT,$(2) [ $(COLOR_RED)$(1)$(COLOR_NONE) ])
-PRINT_FILE        = $(call PRINT_ARCH,$(1),$(2)): $(3)
+#-------------------------------------------------------------------------------
+# Functions
+#-------------------------------------------------------------------------------
+
+# 
+# Prints a message to the standard output
+# 
+# @param    The message
+# 
+PRINT = @echo $(foreach _P,$(PROMPT),"[ "$(COLOR_GREEN)$(_P)$(COLOR_NONE)" ]>")" *** "$(1)
+
+# 
+# Prints an architecture related message to the standard output
+# 
+# @param    The architecture
+# @param    The message
+# 
+PRINT_ARCH = $(call PRINT,$(2) [ $(COLOR_RED)$(1)$(COLOR_NONE) ])
+
+# 
+# Prints an architecture related message about a file to the standard output
+# 
+# @param    The architecture
+# @param    The message
+# @param    The file
+# 
+PRINT_FILE = $(call PRINT_ARCH,$(1),$(2)): $(3)
+
+# 
+# Gets all C files from a specific directory
+# 
+# @param    The directory
+# 
 XEOS_FUNC_C_FILES = $(foreach _F,$(wildcard $(1)*$(EXT_C)),$(_F))
+
+# 
+# Gets all ASM files from a specific directory
+# 
+# @param    The directory
+# 
 XEOS_FUNC_S_FILES = $(foreach _F,$(wildcard $(1)*$(EXT_S)),$(_F))
-XEOS_FUNC_C_OBJ   = $(foreach _F,$(filter %$(EXT_C),$(FILES)),$(patsubst %,$(DIR_BUILD)$(1)/%$(2),$(subst /,.,$(patsubst $(DIR_SRC)%,%,$(_F)))))
-XEOS_FUNC_S_OBJ   = $(foreach _F,$(filter %$(1)$(EXT_ASM),$(FILES)),$(patsubst %,$(DIR_BUILD)$(1)/%$(2),$(subst /,.,$(patsubst $(DIR_SRC)%,%,$(_F)))))
-XEOS_FUNC_OBJ     = $(call XEOS_FUNC_C_OBJ,$(1),$(2)) $(call XEOS_FUNC_S_OBJ,$(1),$(2))
+
+# 
+# Gets all object files to build from C sources
+# 
+# @param    The architecture
+# @param    The object file extension
+# 
+XEOS_FUNC_C_OBJ = $(foreach _F,$(filter %$(EXT_C),$(FILES)),$(patsubst %,$(DIR_BUILD)$(1)/%$(2),$(subst /,.,$(patsubst $(DIR_SRC)%,%,$(_F)))))
+
+# 
+# Gets all object files to build from ASM sources
+# 
+# @param    The architecture
+# @param    The object file extension
+# 
+XEOS_FUNC_S_OBJ = $(foreach _F,$(filter %$(1)$(EXT_ASM),$(FILES)),$(patsubst %,$(DIR_BUILD)$(1)/%$(2),$(subst /,.,$(patsubst $(DIR_SRC)%,%,$(_F)))))
+
+# 
+# Gets all object files to build
+# 
+# @param    The architecture
+# @param    The object file extension
+# 
+XEOS_FUNC_OBJ = $(call XEOS_FUNC_C_OBJ,$(1),$(2)) $(call XEOS_FUNC_S_OBJ,$(1),$(2))
