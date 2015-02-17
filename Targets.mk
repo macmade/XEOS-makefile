@@ -105,7 +105,7 @@ obj-clean:
 update-$(DIR_DEPS)%: $$(DIR_DEPS)$$*
 	
 	$(call PRINT,Updating dependancy: $(COLOR_YELLOW)$*$(COLOR_NONE))
-	@cd $< && git pull
+	@cd $< && git pull > /dev/null
 	
 # Clone dependancy
 $(DIR_DEPS)%:
