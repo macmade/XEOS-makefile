@@ -111,7 +111,7 @@ update-$(DIR_DEPS)%: $$(DIR_DEPS)$$*
 $(DIR_DEPS)%:
 	
 	$(call PRINT,Cloning dependancy: $(COLOR_YELLOW)$*$(COLOR_NONE))
-	@git clone $(patsubst %,$(GIT_URL),$*) $@
+	@git clone --recursive $(patsubst %,$(GIT_URL),$*) $@
 
 # Avoids stupid search rules...
 %$(EXT_C):
