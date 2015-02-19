@@ -89,7 +89,7 @@ DIR_BUILD := build/
 DIR_DEPS  := deps/
 
 # Toolchain paths
-PATH_TOOLCHAIN          := /usr/local/xeos-build/
+PATH_TOOLCHAIN          := /usr/local/xeos-toolchain/
 PATH_TOOLCHAIN_YASM     := $(PATH_TOOLCHAIN)yasm/
 PATH_TOOLCHAIN_LLVM     := $(PATH_TOOLCHAIN)llvm/
 PATH_TOOLCHAIN_BINUTILS := $(PATH_TOOLCHAIN)binutils/
