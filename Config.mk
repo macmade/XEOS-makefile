@@ -66,17 +66,21 @@
 # Default make target
 .DEFAULT_GOAL := all
 
-# Architecture to build
+# Architectures to build
 ARCHS := i386 x86_64
+
+# Host architecture
+HOST_ARCH := $(shell uname -m)
 
 # File extensions
 EXT_C       := .c
 EXT_ASM     := .s
 EXT_H       := .h
-EXT_O       := .o
-EXT_O_PIC   := .o-pic
-EXT_OBJ     := .obj
-EXT_OBJ_PIC := .obj-pic
+EXT_O       := .xeos.o
+EXT_O_PIC   := .xeos.pic.o
+EXT_OBJ     := .xeos.obj
+EXT_OBJ_PIC := .xeos.pic.obj
+EXT_O_HOST  := .host.o
 
 #-------------------------------------------------------------------------------
 # Paths & directories
@@ -123,23 +127,26 @@ CC_i386       := $(CC)
 CC_x86_64     := $(CC)
 CC_PIC_i386   := $(CC)
 CC_PIC_x86_64 := $(CC)
+CC_HOST       := clang
 
 # Arguments for the C compiler
 ARGS_CC_WARN          := -Weverything -Werror
 ARGS_CC_STD           := -std=c99
 ARGS_CC_CONST         := -D __XEOS__ -D _POSIX_C_SOURCE=200809L -U __FreeBSD__ -U __FreeBSD_kernel__
 ARGS_CC_INC           := -I $(DIR_INC)
-ARGS_CC_MISC          := -Os -fno-strict-aliasing -nostdlib -nostdinc -fno-builtin -fblocks
+ARGS_CC_OPTIM         := -Os
+ARGS_CC_MISC          := -fno-strict-aliasing -nostdlib -nostdinc -fno-builtin -fblocks
 ARGS_CC_PROFILE       := -finstrument-functions
 ARGS_CC_PIC           := -fPIC
 ARGS_CC_TARGET_i386   := -march=i386 -target i386-elf-freebsd
 ARGS_CC_TARGET_x86_64 := -march=x86-64 -target x86_64-elf-freebsd
 
 # Architecture specific arguments for the C compiler
-ARGS_CC_i386       = $(ARGS_CC_TARGET_i386) $(ARGS_CC_MISC) $(ARGS_CC_INC) $(ARGS_CC_STD) $(ARGS_CC_WARN) $(ARGS_CC_CONST) $(ARGS_CC_PROFILE)
-ARGS_CC_x86_64     = $(ARGS_CC_TARGET_x86_64) $(ARGS_CC_MISC) $(ARGS_CC_INC) $(ARGS_CC_STD) $(ARGS_CC_WARN) $(ARGS_CC_CONST) $(ARGS_CC_PROFILE)
+ARGS_CC_i386       = $(ARGS_CC_TARGET_i386) $(ARGS_CC_OPTIM) $(ARGS_CC_MISC) $(ARGS_CC_INC) $(ARGS_CC_STD) $(ARGS_CC_WARN) $(ARGS_CC_CONST) $(ARGS_CC_PROFILE)
+ARGS_CC_x86_64     = $(ARGS_CC_TARGET_x86_64) $(ARGS_CC_OPTIM) $(ARGS_CC_MISC) $(ARGS_CC_INC) $(ARGS_CC_STD) $(ARGS_CC_WARN) $(ARGS_CC_CONST) $(ARGS_CC_PROFILE)
 ARGS_CC_PIC_i386   = $(ARGS_CC_i386) $(ARGS_CC_PIC)
 ARGS_CC_PIC_x86_64 = $(ARGS_CC_x86_64) $(ARGS_CC_PIC)
+ARGS_CC_HOST       = $(ARGS_CC_OPTIM) $(ARGS_CC_INC) $(ARGS_CC_STD) $(ARGS_CC_WARN)
 
 # Linker
 LD_i386       := $(PATH_TOOLCHAIN_BINUTILS)bin/i386-elf-freebsd-ld

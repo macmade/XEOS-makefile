@@ -88,12 +88,21 @@ vpath %$(EXT_ASM) $(DIR_SRC)
 
 .SECONDEXPANSION:
 
-# Build object files
+# Build object files for XEOS
 obj-build: _OBJ  = $(foreach _A,$(ARCHS),$(patsubst %,$(DIR_BUILD)%$(EXT_OBJ),$(_A)) $(patsubst %,$(DIR_BUILD)%$(EXT_OBJ_PIC),$(_A)))
 obj-build: _DEPS = $(foreach _D,$(DEPS),$(patsubst %,update-$(DIR_DEPS)%,$(_D)))
 obj-build: $$(_DEPS) $$(_OBJ)
 	
 	@:
+	
+# Build executable for the host
+tool-build: _FILES = $(call XEOS_FUNC_OBJ,$(HOST_ARCH),$(EXT_O_HOST))
+tool-build: _CC    = $(CC_HOST)
+tool-build: _FLAGS = $(ARGS_CC_HOST)
+tool-build: $$(_FILES)
+	
+	$(call PRINT_FILE,$(HOST_ARCH),$(COLOR_CYAN)Creating executbale$(COLOR_NONE),$(COLOR_GRAY)$(TOOL)$(COLOR_NONE))
+	@$(_CC) $(_FLAGS) -o $(DIR_BUILD)$(TOOL) $(_FILES)
 	
 # Clean object files
 obj-clean:
@@ -117,7 +126,7 @@ $(DIR_DEPS)%:
 %$(EXT_C):
 %$(EXT_ASM):
 
-# Links the main object file
+# Links the main object file for XEOS
 $(DIR_BUILD)%$(EXT_OBJ): _ARCH  = $*
 $(DIR_BUILD)%$(EXT_OBJ): _FILES = $(call XEOS_FUNC_OBJ,$(_ARCH),$(EXT_O))
 $(DIR_BUILD)%$(EXT_OBJ): _LD    = $(LD_$(_ARCH))
@@ -127,7 +136,7 @@ $(DIR_BUILD)%$(EXT_OBJ): $$(shell mkdir -p $$(DIR_BUILD)$$(_ARCH)) $$(_FILES)
 	$(call PRINT_FILE,$(_ARCH),$(COLOR_CYAN)Linking main object file$(COLOR_NONE),$(COLOR_GRAY)$(notdir $@)$(COLOR_NONE))
 	@$(_LD) -r $(_FLAGS) $(_FILES) -o $@
 
-# Links the main object file (position independant code)
+# Links the main object file for XEOS (position independant code)
 $(DIR_BUILD)%$(EXT_OBJ_PIC): _ARCH = $*
 $(DIR_BUILD)%$(EXT_OBJ_PIC): _FILES = $(call XEOS_FUNC_OBJ,$(_ARCH),$(EXT_O_PIC))
 $(DIR_BUILD)%$(EXT_OBJ_PIC): _LD    = $(LD_PIC_$(_ARCH))
@@ -137,7 +146,17 @@ $(DIR_BUILD)%$(EXT_OBJ_PIC): $$(shell mkdir -p $$(DIR_BUILD)$$(_ARCH)) $$(_FILES
 	$(call PRINT_FILE,$(_ARCH) - PIC,$(COLOR_CYAN)Linking main object file$(COLOR_NONE),$(COLOR_GRAY)$(notdir $@)$(COLOR_NONE))
 	@$(_LD) -r $(_FLAGS) $(_FILES) -o $@
 
-# Compiles a C file
+# Compiles a C file for the host
+$(DIR_BUILD)%$(EXT_C)$(EXT_O_HOST): _FILE  = $(subst .,/,$(patsubst $(HOST_ARCH)/%,%,$*))$(EXT_C)
+$(DIR_BUILD)%$(EXT_C)$(EXT_O_HOST): _CC    = $(CC_HOST)
+$(DIR_BUILD)%$(EXT_C)$(EXT_O_HOST): _INC   = $(foreach _D,$(DEPS),$(patsubst %,-I $(DIR_DEPS)%/$(DIR_INC),$(_D)))
+$(DIR_BUILD)%$(EXT_C)$(EXT_O_HOST): _FLAGS = $(ARGS_CC_HOST)
+$(DIR_BUILD)%$(EXT_C)$(EXT_O_HOST): $$(shell mkdir -p $$(DIR_BUILD)$$(HOST_ARCH)) $$(_FILE)
+	
+	$(call PRINT_FILE,$(HOST_ARCH),Compiling C file,$(COLOR_YELLOW)$(_FILE)$(COLOR_NONE) "->" $(COLOR_GRAY)$(notdir $@)$(COLOR_NONE))
+	@$(_CC) $(_FLAGS) $(_INC) -o $@ -c $<
+
+# Compiles a C file for XEOS
 $(DIR_BUILD)%$(EXT_C)$(EXT_O): _ARCH  = $(firstword $(subst /, ,$*))
 $(DIR_BUILD)%$(EXT_C)$(EXT_O): _FILE  = $(subst .,/,$(patsubst $(_ARCH)/%,%,$*))$(EXT_C)
 $(DIR_BUILD)%$(EXT_C)$(EXT_O): _CC    = $(CC_$(_ARCH))
@@ -148,7 +167,7 @@ $(DIR_BUILD)%$(EXT_C)$(EXT_O): $$(_FILE)
 	$(call PRINT_FILE,$(_ARCH),Compiling C file,$(COLOR_YELLOW)$(_FILE)$(COLOR_NONE) "->" $(COLOR_GRAY)$(notdir $@)$(COLOR_NONE))
 	@$(_CC) $(_FLAGS) $(_INC) -o $@ -c $<
 
-# Compiles a C file (position independant code)
+# Compiles a C file for XEOS (position independant code)
 $(DIR_BUILD)%$(EXT_C)$(EXT_O_PIC): _ARCH = $(firstword $(subst /, ,$*))
 $(DIR_BUILD)%$(EXT_C)$(EXT_O_PIC): _FILE = $(subst .,/,$(patsubst $(_ARCH)/%,%,$*))$(EXT_C)
 $(DIR_BUILD)%$(EXT_C)$(EXT_O_PIC): _CC   = $(CC_PIC_$(_ARCH))
@@ -159,7 +178,7 @@ $(DIR_BUILD)%$(EXT_C)$(EXT_O_PIC): $$(_FILE)
 	$(call PRINT_FILE,$(_ARCH) - PIC,Compiling C file,$(COLOR_YELLOW)$(_FILE)$(COLOR_NONE) "->" $(COLOR_GRAY)$(notdir $@)$(COLOR_NONE))
 	@$(_CC) $(_FLAGS) $(_INC) -o $@ -c $<
 	
-# Compiles an ASM file
+# Compiles an ASM file for XEOS
 $(DIR_BUILD)%$(EXT_ASM)$(EXT_O): _ARCH  = $(firstword $(subst /, ,$*))
 $(DIR_BUILD)%$(EXT_ASM)$(EXT_O): _FILE  = $(patsubst %/$(_ARCH),%.$(_ARCH),$(subst .,/,$(patsubst $(_ARCH)/%,%,$*)))$(EXT_ASM)
 $(DIR_BUILD)%$(EXT_ASM)$(EXT_O): _AS    = $(AS_$(_ARCH))
@@ -169,7 +188,7 @@ $(DIR_BUILD)%$(EXT_ASM)$(EXT_O): $$(_FILE)
 	$(call PRINT_FILE,$(_ARCH),Compiling ASM file,$(COLOR_YELLOW)$(_FILE)$(COLOR_NONE) "->" $(COLOR_GRAY)$(notdir $@)$(COLOR_NONE))
 	@$(_AS) $(_FLAGS) -o $@ $<
 	
-# Compiles an ASM file (position independant code)
+# Compiles an ASM file for XEOS (position independant code)
 $(DIR_BUILD)%$(EXT_ASM)$(EXT_O_PIC): _ARCH  = $(firstword $(subst /, ,$*))
 $(DIR_BUILD)%$(EXT_ASM)$(EXT_O_PIC): _FILE  = $(patsubst %/$(_ARCH),%.$(_ARCH),$(subst .,/,$(patsubst $(_ARCH)/%,%,$*)))$(EXT_ASM)
 $(DIR_BUILD)%$(EXT_ASM)$(EXT_O_PIC): _AS    = $(AS_PIC_$(_ARCH))
