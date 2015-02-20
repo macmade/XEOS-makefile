@@ -115,9 +115,7 @@ update-$(DIR_DEPS)%: _PING = $(shell ping -o github.com > /dev/null 2>&1 || echo
 update-$(DIR_DEPS)%: $$(DIR_DEPS)$$*
 	
 	$(call PRINT,Updating dependancy: $(COLOR_YELLOW)$*$(COLOR_NONE))
-	@if [ -z $(_PING) ]; then          \
-		cd $< && git pull > /dev/null; \
-	fi
+	@if [ -z $(_PING) ]; then cd $< && git pull > /dev/null; fi
 	
 # Clone dependancy
 $(DIR_DEPS)%:
