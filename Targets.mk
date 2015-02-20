@@ -71,7 +71,7 @@ vpath %$(EXT_ASM) $(DIR_SRC)
 .SUFFIXES:
 
 # Phony targets
-.PHONY: all clean obj-build obj-clean
+.PHONY: all clean obj-build tool-build obj-clean deps
 
 # Precious targets
 .PRECIOUS: $(DIR_BUILD)%$(EXT_O)               \
@@ -111,16 +111,19 @@ obj-clean:
 	@rm -rf $(DIR_BUILD)*
 
 # Update dependancy
+update-$(DIR_DEPS)%: _PING = $(shell ping -o github.com > /dev/null 2>&1 || echo 0)
 update-$(DIR_DEPS)%: $$(DIR_DEPS)$$*
 	
 	$(call PRINT,Updating dependancy: $(COLOR_YELLOW)$*$(COLOR_NONE))
-	@cd $< && git pull > /dev/null
+	@if [ -z $(_PING) ]; then          \
+		cd $< && git pull > /dev/null; \
+	fi
 	
 # Clone dependancy
 $(DIR_DEPS)%:
 	
 	$(call PRINT,Cloning dependancy: $(COLOR_YELLOW)$*$(COLOR_NONE))
-	@git clone --recursive $(patsubst %,$(GIT_URL),$*) $@
+	git clone --recursive $(patsubst %,$(GIT_URL),$*) $@; \
 
 # Avoids stupid search rules...
 %$(EXT_C):
