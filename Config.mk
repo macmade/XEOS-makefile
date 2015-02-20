@@ -106,7 +106,14 @@ GIT_URL := https://github.com/macmade/%.git
 #-------------------------------------------------------------------------------
 
 # Make
-MAKE := $(MAKE) -s
+MAKE_VERSION_MAJOR  := $(shell echo $(MAKE_VERSION) | cut -f1 -d.)
+MAKE_4              := $(shell [ $(MAKE_VERSION_MAJOR) -ge 4 ] && echo true)
+MAKE                := $(MAKE) -s
+
+# Enables parallel execution if available
+ifeq ($(MAKE_4),true)
+    MAKE := $(MAKE) -j 50 --output-sync
+endif
 
 # Assembler
 AS            := $(PATH_TOOLCHAIN_YASM)bin/yasm
