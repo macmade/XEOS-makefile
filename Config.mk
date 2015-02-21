@@ -108,7 +108,7 @@ GIT_URL := https://github.com/macmade/%.git
 # Make
 MAKE_VERSION_MAJOR  := $(shell echo $(MAKE_VERSION) | cut -f1 -d.)
 MAKE_4              := $(shell [ $(MAKE_VERSION_MAJOR) -ge 4 ] && echo true)
-MAKE                := $(MAKE) -s
+MAKE                := $(MAKE) -s MAKEFLAGS=
 
 # Enables parallel execution if available
 ifeq ($(MAKE_4),true)

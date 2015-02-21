@@ -71,7 +71,7 @@ vpath %$(EXT_ASM) $(DIR_SRC)
 .SUFFIXES:
 
 # Phony targets
-.PHONY: all clean obj-build tool-build obj-clean deps
+.PHONY: all clean obj-build _obj-build tool-build _tool-build obj-clean deps
 
 # Precious targets
 .PRECIOUS: $(DIR_BUILD)%$(EXT_O)               \
@@ -89,17 +89,28 @@ vpath %$(EXT_ASM) $(DIR_SRC)
 .SECONDEXPANSION:
 
 # Build object files for XEOS
-obj-build: _OBJ  = $(foreach _A,$(ARCHS),$(patsubst %,$(DIR_BUILD)%$(EXT_OBJ),$(_A)) $(patsubst %,$(DIR_BUILD)%$(EXT_OBJ_PIC),$(_A)))
-obj-build: _DEPS = $(foreach _D,$(DEPS),$(patsubst %,update-$(DIR_DEPS)%,$(_D)))
-obj-build: $$(_DEPS) $$(_OBJ)
+obj-build:
+	
+	@$(MAKE) deps
+	@$(MAKE) _obj-build
+	
+# Build executable for the host
+tool-build:
+	
+	@$(MAKE) deps
+	@$(MAKE) _tool-build
+
+# Build object files for XEOS
+_obj-build: _OBJ  = $(foreach _A,$(ARCHS),$(patsubst %,$(DIR_BUILD)%$(EXT_OBJ),$(_A)) $(patsubst %,$(DIR_BUILD)%$(EXT_OBJ_PIC),$(_A)))
+_obj-build: $$(_OBJ)
 	
 	@:
 	
 # Build executable for the host
-tool-build: _FILES = $(call XEOS_FUNC_OBJ,$(HOST_ARCH),$(EXT_O_HOST))
-tool-build: _CC    = $(CC_HOST)
-tool-build: _FLAGS = $(ARGS_CC_HOST)
-tool-build: $$(_FILES)
+_tool-build: _FILES = $(call XEOS_FUNC_OBJ,$(HOST_ARCH),$(EXT_O_HOST))
+_tool-build: _CC    = $(CC_HOST)
+_tool-build: _FLAGS = $(ARGS_CC_HOST)
+_tool-build: $$(_FILES)
 	
 	$(call PRINT_FILE,$(HOST_ARCH),$(COLOR_CYAN)Creating executbale$(COLOR_NONE),$(COLOR_GRAY)$(TOOL)$(COLOR_NONE))
 	@$(_CC) $(_FLAGS) -o $(DIR_BUILD)$(TOOL) $(_FILES)
@@ -109,6 +120,11 @@ obj-clean:
 	
 	$(call PRINT,Cleaning all build files)
 	@rm -rf $(DIR_BUILD)*
+
+deps: _DEPS = $(foreach _D,$(DEPS),$(patsubst %,update-$(DIR_DEPS)%,$(_D)))
+deps: $$(_DEPS) 
+	
+	@:
 
 # Update dependancy
 update-$(DIR_DEPS)%: _PING = $(shell ping -o github.com > /dev/null 2>&1 || echo 0)
@@ -122,7 +138,7 @@ $(DIR_DEPS)%:
 	
 	$(call PRINT,Cloning dependancy: $(COLOR_YELLOW)$*$(COLOR_NONE))
 	git clone --recursive $(patsubst %,$(GIT_URL),$*) $@; \
-
+	
 # Avoids stupid search rules...
 %$(EXT_C):
 %$(EXT_ASM):
