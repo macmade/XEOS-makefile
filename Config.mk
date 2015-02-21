@@ -107,6 +107,9 @@ GIT_URL := https://github.com/macmade/%.git
 # Software
 #-------------------------------------------------------------------------------
 
+# Default shell
+SHELL := /bin/bash
+
 # Make
 MAKE_VERSION_MAJOR  := $(shell echo $(MAKE_VERSION) | cut -f1 -d.)
 MAKE_4              := $(shell [ $(MAKE_VERSION_MAJOR) -ge 4 ] && echo true)
@@ -205,7 +208,7 @@ endif
 # 
 # @param    The message
 # 
-PRINT = @echo "[ "$(COLOR_PURPLE)$(MAKELEVEL)$(COLOR_NONE) "]> "$(foreach _P,$(PROMPT),"[ "$(COLOR_GREEN)$(_P)$(COLOR_NONE)" ]>")" *** "$(1)
+PRINT = @echo -e "[ "$(COLOR_PURPLE)$(MAKELEVEL)$(COLOR_NONE) "]> "$(foreach _P,$(PROMPT),"[ "$(COLOR_GREEN)$(_P)$(COLOR_NONE)" ]>")" *** "$(1)
 
 # 
 # Prints an architecture related message to the standard output
