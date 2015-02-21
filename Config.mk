@@ -95,6 +95,7 @@ DIR_DEPS  := deps/
 # Toolchain paths
 PATH_TOOLCHAIN          := /usr/local/xeos-toolchain/
 PATH_TOOLCHAIN_YASM     := $(PATH_TOOLCHAIN)yasm/
+PATH_TOOLCHAIN_MAKE     := $(PATH_TOOLCHAIN)make/
 PATH_TOOLCHAIN_LLVM     := $(PATH_TOOLCHAIN)llvm/
 PATH_TOOLCHAIN_BINUTILS := $(PATH_TOOLCHAIN)binutils/
 
@@ -108,7 +109,13 @@ GIT_URL := https://github.com/macmade/%.git
 # Make
 MAKE_VERSION_MAJOR  := $(shell echo $(MAKE_VERSION) | cut -f1 -d.)
 MAKE_4              := $(shell [ $(MAKE_VERSION_MAJOR) -ge 4 ] && echo true)
-MAKE                := $(MAKE) -s MAKEFLAGS=
+MAKE_XEOS           := $(shell [ -f $(PATH_TOOLCHAIN_MAKE)bin/make ] && echo true)
+
+ifeq ($(MAKE_XEOS),true)
+    MAKE := $(PATH_TOOLCHAIN_MAKE)bin/make
+endif
+
+MAKE := $(MAKE) -s MAKEFLAGS=
 
 # Enables parallel execution if available
 ifeq ($(MAKE_4),true)
