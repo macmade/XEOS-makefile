@@ -202,7 +202,7 @@ endif
 # 
 # @param    The message
 # 
-PRINT = @echo $(foreach _P,$(PROMPT),"[ "$(COLOR_GREEN)$(_P)$(COLOR_NONE)" ]>")" [ "$(COLOR_PURPLE)$(MAKELEVEL)$(COLOR_NONE) "]> *** "$(1)
+PRINT = @echo "[ "$(COLOR_PURPLE)$(MAKELEVEL)$(COLOR_NONE) "]> "$(foreach _P,$(PROMPT),"[ "$(COLOR_GREEN)$(_P)$(COLOR_NONE)" ]>")" *** "$(1)
 
 # 
 # Prints an architecture related message to the standard output
