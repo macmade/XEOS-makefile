@@ -71,7 +71,7 @@ vpath %$(EXT_ASM) $(DIR_SRC)
 .SUFFIXES:
 
 # Phony targets
-.PHONY: all clean obj-build _obj-build tool-build _tool-build obj-clean deps
+.PHONY: all clean obj-build _obj-build tool-build _tool-build obj-clean deps sub clean-sub
 
 # Precious targets
 .PRECIOUS: $(DIR_BUILD)%$(EXT_O)               \
@@ -105,6 +105,25 @@ tool-build:
 	
 	@$(MAKE) deps
 	@$(MAKE) _tool-build
+
+build-sub: _TARGETS = $(foreach _T,$(TARGETS),$(addprefix build-sub-,$(_T)))
+build-sub: $$(_TARGETS)
+	
+	@:
+	
+clean-sub: _TARGETS = $(foreach _T,$(TARGETS),$(addprefix clean-sub-,$(_T)))
+clean-sub: $$(_TARGETS)
+	
+	@:
+	
+build-sub-%:
+	
+	$(call PRINT,$(COLOR_CYAN)Building package: $*$(COLOR_NONE))
+	@cd $* && $(MAKE)
+	
+clean-sub-%:
+	
+	@cd $* && $(MAKE) clean
 
 # Build object files for XEOS
 _obj-build: _OBJ  = $(foreach _A,$(ARCHS),$(patsubst %,$(DIR_BUILD)%$(EXT_OBJ),$(_A)) $(patsubst %,$(DIR_BUILD)%$(EXT_OBJ_PIC),$(_A)))
