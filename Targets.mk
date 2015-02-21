@@ -94,6 +94,12 @@ obj-build:
 	@$(MAKE) deps
 	@$(MAKE) _obj-build
 	
+# Build boot binaries
+boot-build:
+	
+	@$(MAKE) deps
+	@$(MAKE) _boot-build
+	
 # Build executable for the host
 tool-build:
 	
@@ -103,6 +109,13 @@ tool-build:
 # Build object files for XEOS
 _obj-build: _OBJ  = $(foreach _A,$(ARCHS),$(patsubst %,$(DIR_BUILD)%$(EXT_OBJ),$(_A)) $(patsubst %,$(DIR_BUILD)%$(EXT_OBJ_PIC),$(_A)))
 _obj-build: $$(_OBJ)
+	
+	@:
+
+# Build boot binaries
+_boot-build: _FILES = $(foreach _F,$(FILES),$(patsubst $(DIR_SRC)%,%,$(_F)))
+_boot-build: _BIN   = $(foreach _F,$(_FILES),$(patsubst %$(EXT_ASM),$(DIR_BUILD)%$(EXT_BIN),$(_F)))
+_boot-build: $$(_BIN)
 	
 	@:
 	
@@ -213,4 +226,14 @@ $(DIR_BUILD)%$(EXT_ASM)$(EXT_O_PIC): _FLAGS = $(ARGS_AS_PIC_$(_ARCH))
 $(DIR_BUILD)%$(EXT_ASM)$(EXT_O_PIC): $$(_FILE)
 	
 	$(call PRINT_FILE,$(_ARCH) - PIC,Compiling ASM file,$(COLOR_YELLOW)$(_FILE)$(COLOR_NONE) "->" $(COLOR_GRAY)$(notdir $@)$(COLOR_NONE))
+	@$(_AS) $(_FLAGS) -o $@ $<
+
+# Compiles an ASM file for the XEOS bootloader
+$(DIR_BUILD)%$(EXT_BIN): _FILE  = $*$(EXT_ASM)
+$(DIR_BUILD)%$(EXT_BIN): _ARCH  = boot
+$(DIR_BUILD)%$(EXT_BIN): _AS    = $(AS_$(_ARCH))
+$(DIR_BUILD)%$(EXT_BIN): _FLAGS = $(ARGS_AS_$(_ARCH))
+$(DIR_BUILD)%$(EXT_BIN): $$(_FILE)
+	
+	$(call PRINT_FILE,$(_ARCH),Compiling ASM file,$(COLOR_YELLOW)$(_FILE)$(COLOR_NONE) "->" $(COLOR_GRAY)$(notdir $@)$(COLOR_NONE))
 	@$(_AS) $(_FLAGS) -o $@ $<

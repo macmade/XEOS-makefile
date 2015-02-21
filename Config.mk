@@ -81,6 +81,7 @@ EXT_O_PIC   := .xeos.pic.o
 EXT_OBJ     := .xeos.obj
 EXT_OBJ_PIC := .xeos.pic.obj
 EXT_O_HOST  := .host.o
+EXT_BIN     := .bin
 
 #-------------------------------------------------------------------------------
 # Paths & directories
@@ -128,10 +129,12 @@ AS_i386       := $(AS)
 AS_x86_64     := $(AS)
 AS_PIC_i386   := $(AS)
 AS_PIC_x86_64 := $(AS)
+AS_boot       := $(AS)
 
 # Arguments for the assembler
 ARGS_AS_i386       := -f elf
 ARGS_AS_x86_64     := -f elf64
+ARGS_AS_boot       := -f bin
 ARGS_AS_PIC_i386   := $(ARGS_AS_i386)
 ARGS_AS_PIC_x86_64 := $(ARGS_AS_x86_64)
 
