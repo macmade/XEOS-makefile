@@ -57,8 +57,6 @@
 # OF THE POSSIBILITY OF SUCH DAMAGE.
 #-------------------------------------------------------------------------------
 
-# $Id$
-
 # Clear any existing search path
 VPATH =
 vpath
