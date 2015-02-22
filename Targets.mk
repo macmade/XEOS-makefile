@@ -114,6 +114,11 @@ clean-sub: $$(_TARGETS)
 	
 	@:
 	
+distclean-sub: _TARGETS = $(foreach _T,$(TARGETS),$(addprefix distclean-sub-,$(_T)))
+distclean-sub: $$(_TARGETS)
+	
+	@:
+	
 build-sub-%:
 	
 	$(call PRINT,$(COLOR_CYAN)Building package: $*$(COLOR_NONE))
@@ -122,6 +127,10 @@ build-sub-%:
 clean-sub-%:
 	
 	@cd $* && $(MAKE) clean
+	
+distclean-sub-%:
+	
+	@cd $* && $(MAKE) distclean
 
 # Build object files for XEOS
 _obj-build: _OBJ  = $(foreach _A,$(ARCHS),$(patsubst %,$(DIR_BUILD)%$(EXT_OBJ),$(_A)) $(patsubst %,$(DIR_BUILD)%$(EXT_OBJ_PIC),$(_A)))
@@ -150,6 +159,12 @@ obj-clean:
 	
 	$(call PRINT,Cleaning all build files)
 	@rm -rf $(DIR_BUILD)*
+	
+# Clean dependancies
+deps-clean:
+	
+	$(call PRINT,Cleaning all cached dependancies)
+	@rm -rf $(DIR_DEPS)*
 
 deps: _DEPS = $(foreach _D,$(DEPS),$(patsubst %,update-$(DIR_DEPS)%,$(_D)))
 deps: $$(_DEPS) 
