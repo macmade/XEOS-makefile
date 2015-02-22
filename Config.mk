@@ -198,17 +198,19 @@ COLOR_CYAN   := "\x1b[36;01m"
 
 endif
 
+# Current GIT branch
+BRANCH := $(shell git rev-parse --abbrev-ref HEAD 2>/dev/null | tr '[:lower:]' '[:upper:]')
+
 #-------------------------------------------------------------------------------
 # Functions
 #-------------------------------------------------------------------------------
-
 
 # 
 # Prints a message to the standard output
 # 
 # @param    The message
 # 
-PRINT = @echo -e "[ "$(COLOR_PURPLE)$(MAKELEVEL)$(COLOR_NONE) "]> "$(foreach _P,$(PROMPT),"[ "$(COLOR_GREEN)$(_P)$(COLOR_NONE)" ]>")" *** "$(1)
+PRINT = @echo -e "[ "$(COLOR_PURPLE)$(MAKELEVEL)$(COLOR_NONE) "]> "$(foreach _P,$(BRANCH) $(PROMPT),"[ "$(COLOR_GREEN)$(_P)$(COLOR_NONE)" ]>")" *** "$(1)
 
 # 
 # Prints an architecture related message to the standard output
