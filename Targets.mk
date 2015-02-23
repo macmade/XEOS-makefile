@@ -121,7 +121,7 @@ distclean-sub: $$(_TARGETS)
 	
 build-sub-%:
 	
-	$(call PRINT,$(COLOR_CYAN)Building package: $*$(COLOR_NONE))
+	$(call PRINT,$(COLOR_CYAN)Building package: $(COLOR_NONE)$(COLOR_YELLOW)$*$(COLOR_NONE))
 	@cd $* && $(MAKE)
 	
 clean-sub-%:
@@ -193,7 +193,7 @@ $(DIR_BUILD)%$(EXT_OBJ): _ARCH  = $*
 $(DIR_BUILD)%$(EXT_OBJ): _FILES = $(call XEOS_FUNC_OBJ,$(_ARCH),$(EXT_O))
 $(DIR_BUILD)%$(EXT_OBJ): _LD    = $(LD_$(_ARCH))
 $(DIR_BUILD)%$(EXT_OBJ): _FLAGS = $(ARGS_LD_$(_ARCH))
-$(DIR_BUILD)%$(EXT_OBJ): $$(shell mkdir -p $$(DIR_BUILD)$$(_ARCH)) $$(_FILES)
+$(DIR_BUILD)%$(EXT_OBJ): $$(shell mkdir -p $$(DIR_BUILD)$$(_ARCH)) $$(_FILES) FORCE
 	
 	$(call PRINT_FILE,$(_ARCH),$(COLOR_CYAN)Linking main object file$(COLOR_NONE),$(COLOR_GRAY)$(notdir $@)$(COLOR_NONE))
 	@$(_LD) -r $(_FLAGS) $(_FILES) -o $@
@@ -203,8 +203,8 @@ $(DIR_BUILD)%$(EXT_OBJ_PIC): _ARCH = $*
 $(DIR_BUILD)%$(EXT_OBJ_PIC): _FILES = $(call XEOS_FUNC_OBJ,$(_ARCH),$(EXT_O_PIC))
 $(DIR_BUILD)%$(EXT_OBJ_PIC): _LD    = $(LD_PIC_$(_ARCH))
 $(DIR_BUILD)%$(EXT_OBJ_PIC): _FLAGS = $(ARGS_LD_PIC_$(_ARCH))
-$(DIR_BUILD)%$(EXT_OBJ_PIC): $$(shell mkdir -p $$(DIR_BUILD)$$(_ARCH)) $$(_FILES)
-
+$(DIR_BUILD)%$(EXT_OBJ_PIC): $$(shell mkdir -p $$(DIR_BUILD)$$(_ARCH)) $$(_FILES) FORCE
+	
 	$(call PRINT_FILE,$(_ARCH) - PIC,$(COLOR_CYAN)Linking main object file$(COLOR_NONE),$(COLOR_GRAY)$(notdir $@)$(COLOR_NONE))
 	@$(_LD) -r $(_FLAGS) $(_FILES) -o $@
 
