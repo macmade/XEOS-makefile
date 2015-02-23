@@ -81,6 +81,7 @@ EXT_OBJ_PIC    := .xeos.pic.obj
 EXT_O_HOST     := .host.o
 EXT_BIN        := .bin
 EXT_LIB_STATIC := .a
+EXT_EXEC       := .elf
 
 #-------------------------------------------------------------------------------
 # Paths & directories
@@ -174,10 +175,10 @@ LD_PIC_i386   := $(LD_i386)
 LD_PIC_x86_64 := $(LD_x86_64)
 
 # Arguments for the linker
-ARGS_LD_i386       := 
-ARGS_LD_x86_64     := 
-ARGS_LD_PIC_i386   := 
-ARGS_LD_PIC_x86_64 := 
+ARGS_LD_i386       := -z max-page-size=0x1000
+ARGS_LD_x86_64     := -z max-page-size=0x1000
+ARGS_LD_PIC_i386   := -z max-page-size=0x1000
+ARGS_LD_PIC_x86_64 := -z max-page-size=0x1000
 
 # Archiver
 AR_i386       := $(PATH_TOOLCHAIN_BINUTILS)bin/i386-elf-freebsd-ar
