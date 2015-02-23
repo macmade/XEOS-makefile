@@ -269,3 +269,8 @@ $(DIR_BUILD)%$(EXT_BIN): $$(_FILE)
 	
 	$(call PRINT_FILE,$(_ARCH),Compiling ASM file,$(COLOR_YELLOW)$(_FILE)$(COLOR_NONE) "->" $(COLOR_GRAY)$(notdir $@)$(COLOR_NONE))
 	@$(_AS) $(_FLAGS) -o $@ $<
+
+# Empty target to force special targets to be built
+FORCE:
+
+	@:

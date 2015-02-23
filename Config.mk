@@ -71,15 +71,16 @@ ARCHS := i386 x86_64
 HOST_ARCH := $(shell uname -m)
 
 # File extensions
-EXT_C       := .c
-EXT_ASM     := .s
-EXT_H       := .h
-EXT_O       := .xeos.o
-EXT_O_PIC   := .xeos.pic.o
-EXT_OBJ     := .xeos.obj
-EXT_OBJ_PIC := .xeos.pic.obj
-EXT_O_HOST  := .host.o
-EXT_BIN     := .bin
+EXT_C          := .c
+EXT_ASM        := .s
+EXT_H          := .h
+EXT_O          := .xeos.o
+EXT_O_PIC      := .xeos.pic.o
+EXT_OBJ        := .xeos.obj
+EXT_OBJ_PIC    := .xeos.pic.obj
+EXT_O_HOST     := .host.o
+EXT_BIN        := .bin
+EXT_LIB_STATIC := .a
 
 #-------------------------------------------------------------------------------
 # Paths & directories
@@ -177,6 +178,18 @@ ARGS_LD_i386       :=
 ARGS_LD_x86_64     := 
 ARGS_LD_PIC_i386   := 
 ARGS_LD_PIC_x86_64 := 
+
+# Archiver
+AR_i386       := $(PATH_TOOLCHAIN_BINUTILS)bin/i386-elf-freebsd-ar
+AR_x86_64     := $(PATH_TOOLCHAIN_BINUTILS)bin/x86_64-elf-freebsd-ar
+RANLIB_i386   := $(PATH_TOOLCHAIN_BINUTILS)bin/i386-elf-freebsd-ranlib
+RANLIB_x86_64 := $(PATH_TOOLCHAIN_BINUTILS)bin/x86_64-elf-freebsd-ranlib
+
+# Arguments for the archiver
+ARGS_AR_i386       := rcs
+ARGS_AR_x86_64     := rcs
+ARGS_RANLIB_i386   := 
+ARGS_RANLIB_x86_64 := 
 
 #-------------------------------------------------------------------------------
 # Display
