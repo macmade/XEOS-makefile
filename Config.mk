@@ -88,6 +88,12 @@ EXT_BIN        := .bin
 EXT_LIB_STATIC := .a
 EXT_EXEC       := .elf
 
+ifeq ($(findstring Darwin, $(shell uname)),)
+    BUILD_HOST := unknown
+else
+    BUILD_HOST := mac
+endif
+
 #-------------------------------------------------------------------------------
 # Paths & directories
 #-------------------------------------------------------------------------------
