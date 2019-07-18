@@ -203,6 +203,10 @@ ARGS_AR_x86_64     := rcs
 ARGS_RANLIB_i386   := 
 ARGS_RANLIB_x86_64 := 
 
+# Strip
+STRIP_i386   := $(PATH_TOOLCHAIN_BINUTILS)bin/i386-elf-freebsd-strip
+STRIP_x86_64 := $(PATH_TOOLCHAIN_BINUTILS)bin/x86_64-elf-freebsd-strip 
+
 #-------------------------------------------------------------------------------
 # Display
 #-------------------------------------------------------------------------------
